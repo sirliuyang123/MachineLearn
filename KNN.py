@@ -23,7 +23,7 @@ class KNN():
         sortedClassCount = sorted(classCount.iteritems(),key = operator.itemgetter(1),reverse=True)
         return sortedClassCount[0][0]
 
-    def file2matrix(selft,filename):
+    def file2matrix(self, filename):
         fr = open(filename)
         numberOfLines = len(fr.readlines())  # get the number of lines in the file
         returnMat = zeros((numberOfLines, 3))  # prepare matrix to return
@@ -38,7 +38,7 @@ class KNN():
             index += 1
         return returnMat, classLabelVector
 
-    def autoNorm(dataSet):
+    def autoNorm(self, dataSet):
         minVals = dataSet.min(0)
         maxVals = dataSet.max(0)
         ranges = maxVals - minVals
@@ -46,10 +46,9 @@ class KNN():
         m = dataSet.shape[0]
         normDataSet = dataSet - tile(minVals, (m, 1))
         normDataSet = normDataSet / tile(ranges, (m, 1))  # element wise divide
+
         return normDataSet, ranges, minVals
+
 kk = KNN()
-
-
-
 group,labels = kk.createDataSet()
-print(kk.classify0([2,1],group,labels,4))
+print(kk.file2matrix("datingTestSet2.txt"))
