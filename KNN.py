@@ -47,7 +47,9 @@ class KNN():
         normDataSet = dataSet - tile(minVals, (m, 1))
         normDataSet = normDataSet / tile(ranges, (m, 1))  # element wise divide
         return normDataSet, ranges, minVals
-k = KNN()
+kk = KNN()
 
-group,labels = k.createDataSet()
-print(k.classify0([2,1],group,labels,4))
+
+
+group,labels = kk.createDataSet()
+print(kk.classify0([2,1],group,labels,4))
