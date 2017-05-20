@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 from numpy import *
 import operator
 import matplotlib
 import matplotlib.pyplot as plt
-from os import listdir
+
 class KNN:
     def createDataSet():
         group = array([[1.0, 1.1], [1.0, 1.0], [0.0, 0.0], [0.0, 0.1]])
@@ -25,11 +26,11 @@ class KNN:
         sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)
         return sortedClassCount[0][0]
 
-    def file2matrix(self,filename):
+    def file2matrix(self, filename):
             fr = open(filename)
             numberOfLines = len(fr.readlines())     #获取文件行数
             returnMat = zeros((numberOfLines, 3))   #将文件中的数据放到返回的矩阵中
-            classLabelVector = []                   # 初始化一个空的标签对象作为将来的返回对象
+            classLabelVector = []                   #初始化一个空的标签对象作为将来的返回对象
             fr = open(filename)
             index = 0
             for line in fr.readlines():
@@ -72,8 +73,8 @@ k = KNN()
 datingDataMat,datingLables = k.file2matrix('datingTestSet2.txt')
 k.datingClassTest()
 
-#fig = plt.figure()
-#ax = fig.add_subplot(111)
-#ax.scatter(datingDataMat[:, 0],datingDataMat[:, 1])
-#ax.scatter(datingDataMat[:, 0],datingDataMat[:, 1], 40.0*array(datingLables), 1.0*array(datingLables))
-#plt.show()
+# fig = plt.figure()
+# ax = fig.add_subplot(111)
+# ax.scatter(datingDataMat[:, 0],datingDataMat[:, 1])
+# ax.scatter(datingDataMat[:, 0],datingDataMat[:, 1], 40.0*array(datingLables), 1.0*array(datingLables))
+# plt.show()
