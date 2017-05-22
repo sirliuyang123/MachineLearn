@@ -10,19 +10,19 @@ class KNN:
         labels = ['A', 'A', 'B', 'B']
         return group, labels
 
-    def classify0(self,inX, dataSet, labels, k):
+    def classify0(self, inX, dataSet, labels, k):
         dataSetSize = dataSet.shape[0]
-        diffMat = tile(inX,(dataSetSize, 1)) - dataSet
+        print(dataSetSize)
+        diffMat = tile(inX, (dataSetSize, 1)) - dataSet
+        # print(diffMat)
         sgDiffMat = diffMat**2
         sgDistances = sgDiffMat.sum(axis=1)
         distances = sgDistances**0.5
         sortedDistIndicies = distances.argsort()
         classCount={}
         for i in range(k):
-
             voteIlabel = labels[sortedDistIndicies[i]]
             classCount[voteIlabel] = classCount.get(voteIlabel, 0) + 1
-
         sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)
         return sortedClassCount[0][0]
 
@@ -41,37 +41,45 @@ class KNN:
                 index += 1
             return returnMat, classLabelVector
 
-    def autoNorm(self,dataSet):
+    # 该方法用于取平均值，减少数值因为取值差距导致对结果的影响，即把矩阵中所有值都转成1以内的小数
+    def autoNorm(self, dataSet):
         minVals = dataSet.min(0)
         maxVals = dataSet.max(0)
         ranges = maxVals - minVals
         normDataSet = zeros(shape(dataSet))
-
         m = dataSet.shape[0]
-
         normDataSet = dataSet - tile(minVals, (m, 1))
         normDataSet = normDataSet / tile(ranges, (m, 1))  # 除法：此处的计算方法是 （原数-该列最小数）/（该列最大数-该列最小数）
         return normDataSet, ranges, minVals
 
     def datingClassTest(self):
-        hoRatio = 0.10  # hold out 10%
+        hoRatio = 0.10  # 只取10%
         datingDataMat, datingLabels = self.file2matrix('datingTestSet2.txt')  # 读取文件
         normMat, ranges, minVals = self.autoNorm(datingDataMat)
-        print(normMat)
         m = normMat.shape[0]
-        print(m)
         numTestVecs = int(m * hoRatio)
         errorCount = 0.0
         for i in range(numTestVecs):
             classifierResult = self.classify0(normMat[i, :], normMat[numTestVecs:m, :], datingLabels[numTestVecs:m], 3)
-            print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, datingLabels[i]))
+            print(normMat[i, :])
+            # print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, datingLabels[i]))
             if (classifierResult != datingLabels[i]): errorCount += 1.0
-        print("the total error rate is: %f" % (errorCount / float(numTestVecs)))
-        print("the total error nuber is: %d" % errorCount)
+        # print("the total error rate is: %f" % (errorCount / float(numTestVecs)))
+        # print("the total error nuber is: %d" % errorCount)
+
+    def img2vector(self, filename):
+        returnVect = zeros((1, 1024))
+        fr = open(filename)
+        for i in range(32):
+            lineStr = fr.readline()
+            for j in range(32):
+                returnVect[0, 32 * i + j] = int(lineStr[j])
+        return returnVect
 
 k = KNN()
 datingDataMat,datingLables = k.file2matrix('datingTestSet2.txt')
 k.datingClassTest()
+
 
 # fig = plt.figure()
 # ax = fig.add_subplot(111)
