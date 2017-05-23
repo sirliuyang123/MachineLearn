@@ -5,25 +5,24 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 class KNN:
-    def createDataSet():
+    def createDataSet(self):
         group = array([[1.0, 1.1], [1.0, 1.0], [0.0, 0.0], [0.0, 0.1]])
         labels = ['A', 'A', 'B', 'B']
         return group, labels
 
     def classify0(self, inX, dataSet, labels, k):
         dataSetSize = dataSet.shape[0]
-        print(dataSetSize)
         diffMat = tile(inX, (dataSetSize, 1)) - dataSet
-        # print(diffMat)
+
         sgDiffMat = diffMat**2
         sgDistances = sgDiffMat.sum(axis=1)
         distances = sgDistances**0.5
-        sortedDistIndicies = distances.argsort()
+        sortedDistIndicies = distances.argsort()  #排序，sortedDistIndicies中是数字元素从小到大排序序号的数组，如：2，3，6，7，1，4，5
         classCount={}
         for i in range(k):
-            voteIlabel = labels[sortedDistIndicies[i]]
-            classCount[voteIlabel] = classCount.get(voteIlabel, 0) + 1
-        sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)
+            voteIlabel = labels[sortedDistIndicies[i]]                                           #获取排在前K个labels
+            classCount[voteIlabel] = classCount.get(voteIlabel, 0) + 1                           #此处定义了一个空字典，字典的key是标签值，并用标签值去获取，如果之前有了，则+1，否则赋0
+        sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)  #排序，operator.itemgetter(1)表示取第2个元素来进行排序
         return sortedClassCount[0][0]
 
     def file2matrix(self, filename):
@@ -61,20 +60,12 @@ class KNN:
         errorCount = 0.0
         for i in range(numTestVecs):
             classifierResult = self.classify0(normMat[i, :], normMat[numTestVecs:m, :], datingLabels[numTestVecs:m], 3)
-            print(normMat[i, :])
-            # print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, datingLabels[i]))
+            print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, datingLabels[i]))
             if (classifierResult != datingLabels[i]): errorCount += 1.0
-        # print("the total error rate is: %f" % (errorCount / float(numTestVecs)))
-        # print("the total error nuber is: %d" % errorCount)
+        print("the total error rate is: %f"%(errorCount / float(numTestVecs)))
+        print("the total error number is: %d"%errorCount)
 
-    def img2vector(self, filename):
-        returnVect = zeros((1, 1024))
-        fr = open(filename)
-        for i in range(32):
-            lineStr = fr.readline()
-            for j in range(32):
-                returnVect[0, 32 * i + j] = int(lineStr[j])
-        return returnVect
+
 
 k = KNN()
 datingDataMat,datingLables = k.file2matrix('datingTestSet2.txt')
