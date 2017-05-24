@@ -54,7 +54,7 @@ class trees():
             if (infoGain > bestInfoGain):  #
                 bestInfoGain = infoGain  # 取信息增益最大的值，并返回这个列序号
                 bestFeature = i
-        return bestFeature  # returns an integer
+        return bestFeature
 
 t = trees()
 dataSet, labels = t.createDataSet()
