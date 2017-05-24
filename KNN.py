@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from numpy import *
+from os import listdir
 import operator
 import matplotlib
 import matplotlib.pyplot as plt
@@ -57,19 +58,73 @@ class KNN:
         normMat, ranges, minVals = self.autoNorm(datingDataMat)
         m = normMat.shape[0]
         numTestVecs = int(m * hoRatio)
+        print("numTestVecs:", numTestVecs, "hoRatio:", m)
         errorCount = 0.0
+        print(normMat[1, :], "shape:", shape(normMat[numTestVecs:m, :]))
         for i in range(numTestVecs):
             classifierResult = self.classify0(normMat[i, :], normMat[numTestVecs:m, :], datingLabels[numTestVecs:m], 3)
             print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, datingLabels[i]))
             if (classifierResult != datingLabels[i]): errorCount += 1.0
-        print("the total error rate is: %f"%(errorCount / float(numTestVecs)))
-        print("the total error number is: %d"%errorCount)
+        #print("the total error rate is: %f"%(errorCount / float(numTestVecs)))
+        #print("the total error number is: %d"%errorCount)
 
+    #将文本中的内容转换成一个1，1024的矩阵向量
+    def img2vector(self, filename):
+        returnVect = zeros((1, 1024))
+        fr = open(filename)
+        for i in range(32):
+            lineStr = fr.readline()
+            for j in range(32):
+                returnVect[0, 32 * i + j] = int(lineStr[j])
+        return returnVect
 
+    def ClassTest(self):
+        hwLabels = []
+        trainingFileList = listdir('trainingDigits')  #装载训练数据
+        print(trainingFileList)
+
+    def handwritingClassTest(self,k):
+        hwLabels = []
+        errorCount = 0
+        trainingFileList = listdir('trainingDigits')  #装载训练数据
+
+        m = len(trainingFileList)
+        trainingMat = zeros((m, 1024))
+        for i in range(m):
+            fileNameStr = trainingFileList[i]
+            fileStr = fileNameStr.split('.')[0]       #去掉后缀名
+            classNumStr = int(fileStr.split('_')[0])
+            hwLabels.append(classNumStr)
+            trainingMat[i, :] = self.img2vector('trainingDigits/%s' % fileNameStr)
+
+        testFileList = listdir('testDigits')        #装载测试样本
+        errorCount = 0.0
+        mTest = len(testFileList)
+        for i in range(mTest):
+            fileNameStr = testFileList[i]
+            fileStr = fileNameStr.split('.')[0]
+            classNumStr = int(fileStr.split('_')[0])
+            vectorUnderTest = self.img2vector('testDigits/%s' % fileNameStr)
+            classifierResult = self.classify0(vectorUnderTest, trainingMat, hwLabels, k)
+            # print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, classNumStr), "test:", fileStr)
+            if (classifierResult != classNumStr): errorCount += 1.0
+        print("\nthe total number of errors is: %d" % errorCount)
+        # print("\nthe total error rate is: %f" % (errorCount / float(mTest)))
+        return errorCount
+
+    def testBestKNNValue(self):
+        returnValue = []
+        Kvalue = 0
+        for kk in range(10):
+            returnValue.append(k.handwritingClassTest(kk + 1))
+            Kvalue = sorted(returnValue, reverse=False)
+        print("beseKvalue is: %f" %Kvalue[0])
 
 k = KNN()
-datingDataMat,datingLables = k.file2matrix('datingTestSet2.txt')
-k.datingClassTest()
+# datingDataMat,datingLables = k.file2matrix('datingTestSet2.txt')
+# k.datingClassTest()
+k.testBestKNNValue()
+
 
 
 # fig = plt.figure()
