@@ -24,7 +24,7 @@ class trees():
             shannonEnt -= prob * log(prob, 2)          # 然后将所有类型进行叠加
         return shannonEnt
 
-    #用于将数据集根据目标（即：axis）的值要求（即：value），返回这个与这个目标相同的数据集 ß
+    #用于将数据集根据目标（即：axis）的值要求（即：value），返回这个与这个目标相同的数据集
     def splitDataSet(self, dataSet, axis, value):
         retDataSet = []
         print dataSet
@@ -41,17 +41,17 @@ class trees():
         baseEntropy = self.calcShannonEnt(dataSet)      #原始香农熵
         bestInfoGain = 0.0
         bestFeature = -1
-        for i in range(numFeatures):  # iterate over all the features
-            featList = [example[i] for example in dataSet]  # create a list of all the examples of this feature
+        for i in range(numFeatures):
+            featList = [example[i] for example in dataSet]  # 用第i列的特征值新建一个数组
             uniqueVals = set(featList)  # 用set获取一个不重复的特征值set
             newEntropy = 0.0
             for value in uniqueVals:
                 subDataSet = self.splitDataSet(dataSet, i, value)
                 prob = len(subDataSet) / float(len(dataSet))
                 newEntropy += prob * self.calcShannonEnt(subDataSet)
-            infoGain = baseEntropy - newEntropy  # calculate the info gain; ie reduction in entropy
-            if (infoGain > bestInfoGain):  # compare this to the best gain so far
-                bestInfoGain = infoGain  # if better than current best, set to best
+            infoGain = baseEntropy - newEntropy  # infoGain为信息增益 ，即老香农熵 - 新的香农熵
+            if (infoGain > bestInfoGain):  #
+                bestInfoGain = infoGain  # 取信息增益最大的值，并返回这个列序号
                 bestFeature = i
         return bestFeature  # returns an integer
 
