@@ -24,6 +24,7 @@ class trees():
             shannonEnt -= prob * log(prob, 2)          # 然后将所有类型进行叠加
         return shannonEnt
 
+    #用于将数据集根据目标（即：axis）的值要求（即：value），返回这个与这个目标相同的数据集
     def splitDataSet(self, dataSet, axis, value):
         retDataSet = []
         print dataSet
