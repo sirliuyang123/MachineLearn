@@ -36,6 +36,7 @@ class trees():
                 retDataSet.append(reducedFeatVec)        #把reducedFeatVec列表append到retDataSet并进行返回
         return retDataSet
 
+
     def chooseBestFeatureToSplit(self, dataSet):
         numFeatures = len(dataSet[0]) - 1               #将最后一个元素作为类别标签
         baseEntropy = self.calcShannonEnt(dataSet)      #原始香农熵
