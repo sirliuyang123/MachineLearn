@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from math import log
 import operator
+from treePlotter import *
 
 class trees():
     def createDataSet(self):
@@ -24,19 +25,17 @@ class trees():
             shannonEnt -= prob * log(prob, 2)          # 然后将所有类型进行叠加
         return shannonEnt
 
-    #用于将数据集根据目标（即：axis）的值要求（即：value），返回这个与这个目标相同的数据集
+    #用于将数据集根据目标（即：axis）的值要求（即：value），返回与这个目标相同的数据集
     def splitDataSet(self, dataSet, axis, value):
         retDataSet = []
-        print dataSet
         for featVec in dataSet:
             if featVec[axis] == value:
                 reducedFeatVec = featVec[:axis]          #把目标值前面的数据取出来
-                print(featVec[axis+1:])
                 reducedFeatVec.extend(featVec[axis+1:])  #把目标值后面的数据取出来，并extend到reducedFeatVec
                 retDataSet.append(reducedFeatVec)        #把reducedFeatVec列表append到retDataSet并进行返回
         return retDataSet
 
-
+    #取熵最大的并返回序号
     def chooseBestFeatureToSplit(self, dataSet):
         numFeatures = len(dataSet[0]) - 1               #将最后一个元素作为类别标签
         baseEntropy = self.calcShannonEnt(dataSet)      #原始香农熵
@@ -56,7 +55,55 @@ class trees():
                 bestFeature = i
         return bestFeature
 
+    #把最多标签返回
+    def majorityCnt(self, classList):
+        classCount = {}
+        for vote in classList:
+            if vote not in classCount.keys(): classCount[vote] = 0
+            classCount[vote] += 1
+        sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
+        return sortedClassCount[0][0]
+
+    def createTree(self, dataSet, labels):
+        classList = [example[-1] for example in dataSet]
+        if classList.count(classList[0]) == len(classList):
+            return classList[0]  # 如果所有的标签都相同的话，则返回
+        if len(dataSet[0]) == 1:  # 遍历完，返回出现次数最多的元素
+            return self.majorityCnt(classList)
+        bestFeat = self.chooseBestFeatureToSplit(dataSet)     #将dataSet中，熵值最大的标签序号返回
+        print bestFeat
+        bestFeatLabel = labels[bestFeat]
+        myTree = {bestFeatLabel: {}}
+        del (labels[bestFeat])
+        featValues = [example[bestFeat] for example in dataSet]
+        uniqueVals = set(featValues)
+        for value in uniqueVals:    #获取该组标签里面不重复的值（也就是分支），然后递归循环分支
+            subLabels = labels[:]  # copy all of labels, so trees don't mess up existing labels
+            myTree[bestFeatLabel][value] = self.createTree(self.splitDataSet(dataSet, bestFeat, value), subLabels)
+        return myTree
+
+    def classify(self, inputTree, featLabels, testVec):
+        firstStr = inputTree.keys()[0]
+
+        secondDict = inputTree[firstStr]
+        print featLabels.index(firstStr)
+        featIndex = featLabels.index(firstStr)
+        key = testVec[featIndex]
+        valueOfFeat = secondDict[key]
+        if isinstance(valueOfFeat, dict):
+            classLabel = self.classify(valueOfFeat, featLabels, testVec)
+        else:
+            classLabel = valueOfFeat
+        return classLabel
+
 t = trees()
+tp = treePlotter()
 dataSet, labels = t.createDataSet()
-print(t.splitDataSet(dataSet, 0, 1))
+# myTree = t.createTree(dataSet, labels)
+
+
+
+
+
+
 
