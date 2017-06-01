@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from math import log
 import operator
-from treePlotter import *
+from treePlotter import treePlotter
 
-class trees():
+class trees:
     def createDataSet(self):
         dataSet = [[1, 1, 'yes'], [1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']]
         labels = ['no surfacing', 'flippers']
@@ -78,7 +78,7 @@ class trees():
         featValues = [example[bestFeat] for example in dataSet]
         uniqueVals = set(featValues)
         for value in uniqueVals:    #获取该组标签里面不重复的值（也就是分支），然后递归循环分支
-            subLabels = labels[:]  # copy all of labels, so trees don't mess up existing labels
+            subLabels = labels[:]
             myTree[bestFeatLabel][value] = self.createTree(self.splitDataSet(dataSet, bestFeat, value), subLabels)
         return myTree
 

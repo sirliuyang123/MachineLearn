@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 from numpy import *
+import os
 from os import listdir
 import operator
 import matplotlib
 import matplotlib.pyplot as plt
 
 class KNN:
+    project_dir = os.path.dirname(os.path.abspath(__file__))
+    os_dir = os.getcwd()
+
     def createDataSet(self):
         group = array([[1.0, 1.1], [1.0, 1.0], [0.0, 0.0], [0.0, 0.1]])
         labels = ['A', 'A', 'B', 'B']
@@ -54,7 +58,7 @@ class KNN:
 
     def datingClassTest(self):
         hoRatio = 0.10  # 只取10%
-        datingDataMat, datingLabels = self.file2matrix('datingTestSet2.txt')  # 读取文件
+        datingDataMat, datingLabels = self.file2matrix(self.os_dir+'/../datingTestSet2.txt')  # 读取文件
         normMat, ranges, minVals = self.autoNorm(datingDataMat)
         m = normMat.shape[0]
         numTestVecs = int(m * hoRatio)
@@ -80,13 +84,13 @@ class KNN:
 
     def ClassTest(self):
         hwLabels = []
-        trainingFileList = listdir('trainingDigits')  #装载训练数据
+        trainingFileList = listdir(self.os_dir+'/../trainingDigits')  #装载训练数据
         print(trainingFileList)
 
-    def handwritingClassTest(self,k):
+    def handwritingClassTest(self, k):
         hwLabels = []
         errorCount = 0
-        trainingFileList = listdir('trainingDigits')  #装载训练数据
+        trainingFileList = listdir(self.os_dir+'/../trainingDigits')  #装载训练数据
 
         m = len(trainingFileList)
         trainingMat = zeros((m, 1024))
@@ -95,16 +99,16 @@ class KNN:
             fileStr = fileNameStr.split('.')[0]       #去掉后缀名
             classNumStr = int(fileStr.split('_')[0])
             hwLabels.append(classNumStr)
-            trainingMat[i, :] = self.img2vector('trainingDigits/%s' % fileNameStr)
+            trainingMat[i, :] = self.img2vector('../trainingDigits/%s' % fileNameStr)
 
-        testFileList = listdir('testDigits')        #装载测试样本
+        testFileList = listdir(self.os_dir+'/../testDigits')        #装载测试样本
         errorCount = 0.0
         mTest = len(testFileList)
         for i in range(mTest):
             fileNameStr = testFileList[i]
             fileStr = fileNameStr.split('.')[0]
             classNumStr = int(fileStr.split('_')[0])
-            vectorUnderTest = self.img2vector('testDigits/%s' % fileNameStr)
+            vectorUnderTest = self.img2vector(self.os_dir+'/../testDigits/%s' % fileNameStr)
             classifierResult = self.classify0(vectorUnderTest, trainingMat, hwLabels, k)
             # print("the classifier came back with: %d, the real answer is: %d" % (classifierResult, classNumStr), "test:", fileStr)
             if (classifierResult != classNumStr): errorCount += 1.0
@@ -124,8 +128,6 @@ k = KNN()
 # datingDataMat,datingLables = k.file2matrix('datingTestSet2.txt')
 # k.datingClassTest()
 k.testBestKNNValue()
-
-
 
 # fig = plt.figure()
 # ax = fig.add_subplot(111)
