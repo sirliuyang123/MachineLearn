@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from math import log
 import operator
-from treePlotter import treePlotter
+import pickle
+import os
+import treePlotter
 
 class trees:
     def createDataSet(self):
@@ -84,22 +86,46 @@ class trees:
 
     def classify(self, inputTree, featLabels, testVec):
         firstStr = inputTree.keys()[0]
-
         secondDict = inputTree[firstStr]
-        print featLabels.index(firstStr)
         featIndex = featLabels.index(firstStr)
+        print inputTree, featLabels
+        print "firstStr:", firstStr, "secondDict:", secondDict, "featIndex:", featIndex
         key = testVec[featIndex]
+
         valueOfFeat = secondDict[key]
+        print "valueOfFeat:  ", valueOfFeat
         if isinstance(valueOfFeat, dict):
             classLabel = self.classify(valueOfFeat, featLabels, testVec)
         else:
             classLabel = valueOfFeat
         return classLabel
 
+    def storeTree(self, inputTree, filename):
+        fw = open(filename, 'w')
+        pickle.dump(inputTree, fw)
+        fw.close()
+
+    def grabTree(self, filename):
+        fr = open(filename)
+        return pickle.load(fr)
+
+    def lenses(self):
+        fr = open('src/tree/lenses.txt')
+        lenses = [inst.strip().split('\t') for inst in fr.readlines()]
+        lensesLabels = ['age', 'prescript', 'astigmatic', 'tearRate']
+        lensesTrees = self.createTree(lenses, lensesLabels)
+        print lensesTrees
+        treePlotter.createPlot(lensesTrees)
+
 t = trees()
-tp = treePlotter()
+
 dataSet, labels = t.createDataSet()
-# myTree = t.createTree(dataSet, labels)
+myTree = treePlotter.retrieveTree(0)
+# print(t.classify(myTree, labels, [1,1]))
+# t.storeTree(myTree, 'classifierStorage.txt')
+# trees = t.grabTree('classifierStorage.txt')
+t.lenses()
+
 
 
 
