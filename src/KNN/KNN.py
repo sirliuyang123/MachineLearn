@@ -35,7 +35,6 @@ class KNN:
             numberOfLines = len(fr.readlines())     #获取文件行数
             returnMat = zeros((numberOfLines, 3))   #将文件中的数据放到返回的矩阵中
             classLabelVector = []                   #初始化一个空的标签对象作为将来的返回对象
-            fr = open(filename)
             index = 0
             for line in fr.readlines():
                 line = line.strip()
@@ -91,11 +90,11 @@ class KNN:
         hwLabels = []
         errorCount = 0
         trainingFileList = listdir(self.os_dir+'/../trainingDigits')  #装载训练数据
-
         m = len(trainingFileList)
         trainingMat = zeros((m, 1024))
         for i in range(m):
             fileNameStr = trainingFileList[i]
+            #print("fileNameStr:::",fileNameStr)  #此处容易因为Mac系统生成了.DS_Store文件，导致报错
             fileStr = fileNameStr.split('.')[0]       #去掉后缀名
             classNumStr = int(fileStr.split('_')[0])
             hwLabels.append(classNumStr)
@@ -125,7 +124,7 @@ class KNN:
         print("beseKvalue is: %f" %Kvalue[0])
 
 k = KNN()
-# datingDataMat,datingLables = k.file2matrix('datingTestSet2.txt')
+datingDataMat,datingLables = k.file2matrix('datingTestSet2.txt')
 # k.datingClassTest()
 k.testBestKNNValue()
 
